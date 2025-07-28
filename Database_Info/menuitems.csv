@@ -1,0 +1,14 @@
+menu_item_id,name,category_id,price,image
+1,"Big Mac",2,5.99,bigmac.jpg
+2,Coca-Cola,3,1.99,coke.jpg
+3,"Apple Pie",4,1.49,applepie.jpg
+4,"French Fries",5,2.49,fries.jpg
+5,"Apple Slices",5,1.29,appleslices.jpg
+6,McChicken,2,3.99,mcchicken.jpg
+7,"Diet Coke",3,1.99,dietcoke.jpg
+8,"Ice Cream -Vanilla",4,1.29,vanillaicecream.jpg
+9,"Large Fries",5,2.99,fries.jpg
+10,"Chocolate Milk Shake",3,3.99,chocolatemilkshake.jpg
+11,"Big Mac Combo",1,9.99,bigmaccombo.jpg
+12,"McChicken Combo",1,7.99,mcchickencombo.jpg
+13,"Strawberry Milk Shake",3,3.99,strawberrymilkshake.jpg

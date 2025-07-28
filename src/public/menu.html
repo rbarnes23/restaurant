@@ -1,0 +1,23 @@
+<select id="categoryFilter"></select>
+<div id="menuItems"></div>
+<div id="cartItems"></div>
+<span id="cartTotal">0.00</span>
+<button id="clearCart">Clear Cart</button>
+<button id="checkout">Checkout</button>
+<div id="addressModal" class="hidden">
+  <select id="addressSelect"></select>
+  <button id="confirmAddress">Confirm</button>
+  <button id="closeModal">Close</button>
+  <button id="addNewAddressBtn">Add New Address</button>
+  <form id="newAddressForm" class="hidden">
+    <input id="newStreet" placeholder="Street">
+    <input id="newCity" placeholder="City">
+    <input id="newState" placeholder="State">
+    <input id="newZipCode" placeholder="Zip Code">
+    <input id="newCountry" placeholder="Country">
+    <input id="newIsDefault" type="checkbox"> Set as Default
+    <button id="saveNewAddress">Save</button>
+    <button id="cancelNewAddress">Cancel</button>
+  </form>
+</div>
+<script src="app.js"></script>

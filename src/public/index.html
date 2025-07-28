@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>McDonald's</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .menu-item-image {
+      width: 6rem; /* 96px, ensuring square shape */
+      height: 6rem;
+      object-fit: cover; /* Crop to fit square, preserving aspect ratio */
+      border-radius: 0.25rem; /* Slight rounding for aesthetics */
+    }
+    #menuItems > div {
+      min-height: 6rem; /* Ensure menu item box height matches image */
+      align-items: stretch; /* Stretch contents to match height */
+    }
+    #menuItems > div > div {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.5rem 0; /* Adjust padding for vertical alignment */
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <header class="bg-yellow-500 text-white p-4">
+    <nav class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">McDonald's</h1>
+      <ul class="flex space-x-4">
+        <li><a href="/" class="hover:underline">Menu</a></li>
+        <li><a href="/orders" class="hover:underline">Orders</a></li>
+        <li><a href="/maintenance" class="hover:underline">Maintenance</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container mx-auto p-4">
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Menu</h2>
+      <div class="mb-4">
+        <label for="categoryFilter" class="mr-2">Filter by Category:</label>
+        <select id="categoryFilter" class="border rounded px-2 py-1">
+          <option value="">All</option>
+        </select>
+      </div>
+      <div id="menuItems" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Cart</h2>
+      <div id="cartItems" class="bg-white p-4 rounded shadow mb-4"></div>
+      <p class="mb-4">Total: $<span id="cartTotal">0.00</span></p>
+      <button id="clearCart" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mr-2" disabled>Clear Cart</button>
+      <button id="checkout" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" disabled>Attach Address</button>
+    </section>
+
+    <div id="addressModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+        <h3 class="text-xl font-semibold mb-4">Delivery Address</h3>
+        <div class="mb-4">
+          <select id="addressSelect" class="w-full border rounded px-2 py-1">
+            <option value="">Select an address</option>
+          </select>
+          <button id="addNewAddressBtn" class="mt-2 text-blue-500 hover:underline">+ Add New Address</button>
+        </div>
+        <div id="newAddressForm" class="hidden">
+          <div class="mb-2">
+            <label for="newStreet" class="block">Street</label>
+            <input id="newStreet" type="text" class="w-full border rounded px-2 py-1">
+          </div>
+          <div class="mb-2">
+            <label for="newCity" class="block">City</label>
+            <input id="newCity" type="text" class="w-full border rounded px-2 py-1">
+          </div>
+          <div class="mb-2">
+            <label for="newState" class="block">State</label>
+            <input id="newState" type="text" class="w-full border rounded px-2 py-1">
+          </div>
+          <div class="mb-2">
+            <label for="newZipCode" class="block">Zip Code</label>
+            <input id="newZipCode" type="text" class="w-full border rounded px-2 py-1">
+          </div>
+          <div class="mb-2">
+            <label for="newCountry" class="block">Country</label>
+            <input id="newCountry" type="text" class="w-full border rounded px-2 py-1">
+          </div>
+          <div class="mb-2">
+            <label class="flex items-center">
+              <input id="newIsDefault" type="checkbox" class="mr-2">
+              Set as default address
+            </label>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button id="cancelNewAddress" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+            <button id="saveNewAddress" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save Address</button>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button id="closeModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+          <button id="confirmAddress" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" disabled>Confirm Address</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

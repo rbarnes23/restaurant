@@ -1,0 +1,7 @@
+Field,Type,Null,Key,Default,Extra
+ingredient_id,int(11),NO,PRI,NULL,auto_increment
+name,varchar(100),NO,UNI,NULL,
+unit,varchar(20),NO,,NULL,
+cost_per_unit,"decimal(10,2)",YES,,NULL,
+description,text,YES,,NULL,
+created_at,timestamp,NO,,CURRENT_TIMESTAMP,

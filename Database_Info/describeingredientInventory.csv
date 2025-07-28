@@ -1,0 +1,8 @@
+Field,Type,Null,Key,Default,Extra
+inventory_id,int(11),NO,PRI,NULL,auto_increment
+ingredient_id,int(11),NO,MUL,NULL,
+transaction_type_id,int(11),NO,MUL,NULL,
+quantity,"decimal(10,2)",NO,,NULL,
+unit,varchar(20),NO,,NULL,
+transaction_date,timestamp,NO,,CURRENT_TIMESTAMP,
+notes,text,YES,,NULL,

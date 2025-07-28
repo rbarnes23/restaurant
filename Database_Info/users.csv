@@ -1,0 +1,6 @@
+Field,Type,Null,Key,Default,Extra
+user_id,int(11),NO,PRI,NULL,auto_increment
+username,varchar(50),NO,UNI,NULL,
+email,varchar(100),NO,UNI,NULL,
+password_hash,varchar(255),NO,,NULL,
+created_at,timestamp,YES,,current_timestamp(),

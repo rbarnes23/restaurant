@@ -1,0 +1,6 @@
+Field,Type,Null,Key,Default,Extra
+menu_item_id,int(11),NO,PRI,NULL,auto_increment
+name,varchar(100),NO,,NULL,
+category_id,int(11),NO,MUL,NULL,
+price,"decimal(10,2)",NO,,NULL,
+image,varchar(255),YES,,NULL,

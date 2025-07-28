@@ -1,0 +1,17 @@
+id,group_id,group_name,display
+1,1,Menu_Category,Combos
+2,1,Menu_Category,Burgers
+3,1,Menu_Category,Drinks
+4,1,Menu_Category,Desserts
+5,1,Menu_Category,Sides
+6,1,Menu_Category,Burgers
+7,2,"Order Status",Pending
+8,2,"Order Status","In Progress"
+9,2,"Order Status",Filled
+10,2,"Order Status","Ready for Pickup"
+11,2,"Order Status",Cancelled
+12,2,"Order Status","Out for Delivery"
+13,1,Menu_Category,"All Items"
+14,3,Maintenance,"Menu Item Maintenance"
+15,3,Maintenance,"Lookup Table Maintenance"
+16,3,Maintenance,"User Maintenance"

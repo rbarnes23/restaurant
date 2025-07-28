@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>McDonald's - Maintenance</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Custom dropdown styles */
+    #maintenanceDropdown {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 1.5em;
+      padding-right: 2.5rem;
+    }
+    #maintenanceDropdown option {
+      background: #fbbf24;
+      color: #1f2937;
+    }
+    .maintenance-section {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .maintenance-section.hidden {
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      display: none;
+    }
+    /* Recipe modal styles */
+    #recipeModal .max-h-64 {
+      max-height: 16rem;
+    }
+    #recipeList tr {
+      transition: background-color 0.2s;
+    }
+    #recipeList tr:hover {
+      background-color: #f9fafb;
+    }
+    .delete-recipe {
+      transition: color 0.2s;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <header class="bg-yellow-500 text-white p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">McDonald's - Maintenance</h1>
+    <div class="flex items-center">
+      <a href="/" class="mr-4 hover:underline">Menu</a>
+      <a href="/orders" class="mr-4 hover:underline">Orders</a>
+      <div class="relative">
+        <select id="maintenanceDropdown" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 focus:outline-none cursor-pointer">
+          <option value="">Select Maintenance</option>
+          <!-- Will be populated dynamically -->
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto p-4">
+    <!-- Empty State (Shown initially) -->
+    <div id="emptyState" class="bg-white p-8 rounded-lg shadow text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No maintenance section selected</h3>
+      <p class="mt-1 text-gray-500">Please select an option from the dropdown menu.</p>
+    </div>
+
+    <!-- Menu Items Maintenance (Hidden by default) -->
+    <div id="menuMaintenance" class="maintenance-section hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">Menu Items</h2>
+        <button id="addMenuItem" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          Add Menu Item
+        </button>
+      </div>
+
+      <div class="bg-white rounded shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recipes</th>
+            </tr>
+          </thead>
+          <tbody id="menuItemsTable" class="bg-white divide-y divide-gray-200">
+            <!-- Will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Menu Item Modal -->
+      <div id="menuItemModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+          <h2 id="modalTitle" class="text-xl font-bold mb-4">Add Menu Item</h2>
+          <form id="menuItemForm">
+            <input type="hidden" id="menuItemId">
+            <div class="mb-4">
+              <label for="itemName" class="block text-sm font-medium text-gray-700">Name</label>
+              <input type="text" id="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+            </div>
+            <div class="mb-4">
+              <label for="itemPrice" class="block text-sm font-medium text-gray-700">Price</label>
+              <input type="number" id="itemPrice" step="0.01" min="0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+            </div>
+            <div class="mb-4">
+              <label for="itemCategory" class="block text-sm font-medium text-gray-700">Category</label>
+              <select id="itemCategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+                <!-- Will be populated dynamically -->
+              </select>
+            </div>
+            <div class="mb-4">
+              <label for="itemImage" class="block text-sm font-medium text-gray-700">Image URL</label>
+              <input type="text" id="itemImage" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
+            </div>
+            <div class="flex justify-end space-x-3">
+              <button type="button" id="cancelMenuItem" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                Cancel
+              </button>
+              <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other Maintenance Sections Container (Hidden by default) -->
+    <div id="otherMaintenance" class="maintenance-section hidden">
+      <h2 id="maintenanceTitle" class="text-xl font-bold mb-4"></h2>
+      <div id="maintenanceContent" class="bg-white p-4 rounded shadow">
+        <p>Select a maintenance option from the dropdown</p>
+      </div>
+    </div>
+
+    <!-- Recipe Modal -->
+    <div id="recipeModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-full max-w-2xl">
+        <h3 id="recipeModalTitle" class="text-xl font-bold mb-4">Recipes for <span id="recipeItemName"></span></h3>
+        <input type="hidden" id="recipeMenuItemId">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-semibold mb-2">Current Recipes</h4>
+            <div class="bg-gray-100 p-4 rounded max-h-64 overflow-y-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ingredient</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="recipeList" class="bg-white divide-y divide-gray-200">
+                  <!-- Recipes will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold mb-2">Add New Recipe</h4>
+            <form id="recipeForm" class="space-y-4">
+              <div>
+                <label for="ingredientSelect" class="block text-sm font-medium text-gray-700">Ingredient</label>
+                <select id="ingredientSelect" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+                  <option value="">Select Ingredient</option>
+                </select>
+              </div>
+              <div>
+                <label for="recipeQuantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <input type="number" id="recipeQuantity" step="0.01" min="0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+              </div>
+              <div>
+                <label for="recipeUnit" class="block text-sm font-medium text-gray-700">Unit</label>
+                <input type="text" id="recipeUnit" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+              </div>
+              <div class="flex justify-end space-x-3">
+                <button type="button" id="cancelRecipe" class="px-4 py-2 border border-red-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  Cancel Recipe
+                </button>
+                <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                  Add Recipe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+	<!-- Ingredient Modal -->
+	<div id="ingredientModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+	  <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+	    <h2 id="ingredientModalTitle" class="text-xl font-bold mb-4">Add Ingredient</h2>
+	    <form id="ingredientForm">
+	      <input type="hidden" id="ingredientId">
+	      <div class="mb-4">
+		<label for="ingredientName" class="block text-sm font-medium text-gray-700">Name</label>
+		<input type="text" id="ingredientName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+	      </div>
+	      <div class="mb-4">
+		<label for="ingredientUnit" class="block text-sm font-medium text-gray-700">Unit</label>
+		<input type="text" id="ingredientUnit" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+	      </div>
+	      <div class="mb-4">
+		<label for="ingredientCost" class="block text-sm font-medium text-gray-700">Cost Per Unit (optional)</label>
+		<input type="number" step="0.01" min="0" id="ingredientCost" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
+	      </div>
+	      <div class="mb-4">
+		<label for="ingredientDescription" class="block text-sm font-medium text-gray-700">Description (optional)</label>
+		<textarea id="ingredientDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"></textarea>
+	      </div>
+	      <div class="flex justify-end space-x-3">
+		<button type="button" id="cancelIngredient" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+		  Cancel
+		</button>
+		<button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+		  Save
+		</button>
+	      </div>
+	    </form>
+	  </div>
+	</div>
+
+    <!-- Lookup Item Modal -->
+    <div id="lookupModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+        <h2 id="lookupModalTitle" class="text-xl font-bold mb-4">Add Lookup Item</h2>
+        <form id="lookupForm">
+          <input type="hidden" id="lookupId">
+          <div class="mb-4">
+            <label for="lookupGroupId" class="block text-sm font-medium text-gray-700">Group ID</label>
+            <input type="number" id="lookupGroupId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+          </div>
+          <div class="mb-4">
+            <label for="lookupGroupName" class="block text-sm font-medium text-gray-700">Group Name</label>
+            <input type="text" id="lookupGroupName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+          </div>
+          <div class="mb-4">
+            <label for="lookupDisplay" class="block text-sm font-medium text-gray-700">Display</label>
+            <input type="text" id="lookupDisplay" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button type="button" id="cancelLookup" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+        <h2 id="userModalTitle" class="text-xl font-bold mb-4">Add User</h2>
+        <form id="userForm">
+          <input type="hidden" id="userId">
+          <div class="mb-4">
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+          </div>
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+          </div>
+          <div class="mb-4">
+            <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+            <input type="text" id="role" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500" required>
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button type="button" id="cancelUser" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  <!-- Vendor Modal -->
+    <div id="vendorModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-3/4 max-h-[80vh] overflow-y-auto">
+        <h2 id="vendorModalTitle" class="text-xl font-semibold mb-4">Add Vendor</h2>
+        <form id="vendorForm">
+          <input type="hidden" id="vendorId">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="mb-4">
+                <label for="vendorName" class="block text-sm font-medium text-gray-700">Vendor Name*</label>
+                <input type="text" id="vendorName" class="mt-1 block w-full p-2 border rounded" required>
+              </div>
+              <div class="mb-4">
+                <label for="vendorContactPerson" class="block text-sm font-medium text-gray-700">Contact Person</label>
+                <input type="text" id="vendorContactPerson" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorEmail" class="block text-sm font-medium text-gray-700">Email*</label>
+                <input type="email" id="vendorEmail" class="mt-1 block w-full p-2 border rounded" required>
+              </div>
+              <div class="mb-4">
+                <label for="vendorPhone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <input type="text" id="vendorPhone" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorAlternatePhone" class="block text-sm font-medium text-gray-700">Alternate Phone</label>
+                <input type="text" id="vendorAlternatePhone" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorWebsite" class="block text-sm font-medium text-gray-700">Website</label>
+                <input type="url" id="vendorWebsite" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorAddressLine1" class="block text-sm font-medium text-gray-700">Address Line 1</label>
+                <input type="text" id="vendorAddressLine1" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorAddressLine2" class="block text-sm font-medium text-gray-700">Address Line 2</label>
+                <input type="text" id="vendorAddressLine2" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorCity" class="block text-sm font-medium text-gray-700">City</label>
+                <input type="text" id="vendorCity" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorStateProvince" class="block text-sm font-medium text-gray-700">State/Province</label>
+                <input type="text" id="vendorStateProvince" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorPostalCode" class="block text-sm font-medium text-gray-700">Postal Code</label>
+                <input type="text" id="vendorPostalCode" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorCountry" class="block text-sm font-medium text-gray-700">Country</label>
+                <input type="text" id="vendorCountry" class="mt-1 block w-full p-2 border rounded">
+              </div>
+            </div>
+            <div>
+              <div class="mb-4">
+                <label for="vendorTaxId" class="block text-sm font-medium text-gray-700">Tax ID</label>
+                <input type="text" id="vendorTaxId" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorBusinessRegNumber" class="block text-sm font-medium text-gray-700">Business Registration Number</label>
+                <input type="text" id="vendorBusinessRegNumber" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorSince" class="block text-sm font-medium text-gray-700">Vendor Since</label>
+                <input type="date" id="vendorSince" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorCategory" class="block text-sm font-medium text-gray-700">Vendor Category</label>
+                <input type="text" id="vendorCategory" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorPaymentTerms" class="block text-sm font-medium text-gray-700">Payment Terms</label>
+                <input type="text" id="vendorPaymentTerms" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorPaymentMethod" class="block text-sm font-medium text-gray-700">Preferred Payment Method</label>
+                <input type="text" id="vendorPaymentMethod" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorCurrency" class="block text-sm font-medium text-gray-700">Currency Preference</label>
+                <input type="text" id="vendorCurrency" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorCreditLimit" class="block text-sm font-medium text-gray-700">Credit Limit</label>
+                <input type="number" step="0.01" id="vendorCreditLimit" class="mt-1 block w-full p-2 border rounded">
+              </div>
+              <div class="mb-4">
+                <label for="vendorIsActive" class="flex items-center">
+                  <input type="checkbox" id="vendorIsActive" class="mr-2" checked> Is Active
+                </label>
+              </div>
+              <div class="mb-4">
+                <label for="vendorRating" class="block text-sm font-medium text-gray-700">Rating</label>
+                <select id="vendorRating" class="mt-1 block w-full p-2 border rounded">
+                  <option value="">Select Rating</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label for="vendorNotes" class="block text-sm font-medium text-gray-700">Notes</label>
+                <textarea id="vendorNotes" class="mt-1 block w-full p-2 border rounded"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" id="cancelVendor" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div id="inventoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-1/2">
+        <h2 id="inventoryModalTitle" class="text-xl font-semibold mb-4">Add Inventory Transaction</h2>
+        <form id="inventoryForm">
+          <input type="hidden" id="inventoryId">
+          <div class="mb-4">
+            <label for="inventoryIngredient" class="block text-sm font-medium text-gray-700">Ingredient</label>
+            <select id="inventoryIngredient" class="mt-1 block w-full p-2 border rounded" required>
+              <option value="">Select Ingredient</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="inventoryType" class="block text-sm font-medium text-gray-700">Transaction Type</label>
+            <select id="inventoryType" class="mt-1 block w-full p-2 border rounded" required>
+              <option value="">Select Transaction Type</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="inventoryQuantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+            <input type="number" step="0.01" id="inventoryQuantity" class="mt-1 block w-full p-2 border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="inventoryUnit" class="block text-sm font-medium text-gray-700">Unit</label>
+            <input type="text" id="inventoryUnit" class="mt-1 block w-full p-2 border rounded" required>
+          </div>
+          <div class="mb-4">
+            <label for="inventoryNotes" class="block text-sm font-medium text-gray-700">Notes</label>
+            <textarea id="inventoryNotes" class="mt-1 block w-full p-2 border rounded"></textarea>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" id="cancelInventory" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+
+
+    <!-- Address Modal -->
+    <div id="addressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+        <h3 id="addressModalTitle" class="text-lg font-semibold mb-4">Add Address</h3>
+        <form id="addressForm">
+          <input type="hidden" id="addressId">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">User ID (optional)</label>
+            <input type="number" id="addressUserId" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Street</label>
+            <input type="text" id="street" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">City</label>
+            <input type="text" id="city" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">State</label>
+            <input type="text" id="state" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Zip Code</label>
+            <input type="text" id="zipCode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Country</label>
+            <input type="text" id="country" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+          </div>
+          <div class="mb-4">
+            <label class="flex items-center">
+              <input type="checkbox" id="isDefault" class="mr-2">
+              <span class="text-sm font-medium text-gray-700">Set as Default</span>
+            </label>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" id="cancelAddress" class="mr-2 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="/maintenance.js"></script>
+</body>
+</html>

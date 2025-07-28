@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>McDonald's - Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .status-select {
+      min-width: 10rem; /* Ensure dropdown is wide enough for status names */
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <header class="bg-yellow-500 text-white p-4">
+    <nav class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">McDonald's</h1>
+      <ul class="flex space-x-4">
+        <li><a href="/" class="hover:underline">Menu</a></li>
+        <li><a href="/orders" class="hover:underline">Orders</a></li>
+        <li><a href="/maintenance" class="hover:underline">Maintenance</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container mx-auto p-4">
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Order History</h2>
+      <div class="mb-4 flex items-center">
+        <label for="statusFilter" class="mr-2 text-lg font-medium">Filter by Status:</label>
+        <select id="statusFilter" class="border rounded px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">All Statuses</option>
+        </select>
+      </div>
+      <div id="ordersList" class="space-y-4"></div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

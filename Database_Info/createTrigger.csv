@@ -1,0 +1,16 @@
+DELIMITER //
+CREATE TRIGGER update_inventory_after_cart_item
+AFTER INSERT ON cart_items
+FOR EACH ROW
+BEGIN
+    INSERT INTO ingredient_inventory (ingredient_id, transaction_type, quantity, unit, notes)
+    SELECT 
+        r.ingredient_id,
+        'USAGE',
+        -r.quantity * NEW.quantity, -- Negative: reduce stock
+        r.unit,
+        CONCAT('Used for menu_item_id ', NEW.menu_item_id, ' in transaction ', NEW.transaction_id)
+    FROM recipes r
+    WHERE r.menu_item_id = NEW.menu_item_id;
+END //
+DELIMITER ;
