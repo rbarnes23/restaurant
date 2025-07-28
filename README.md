@@ -18,3 +18,6 @@ A web application built to explore AI-assisted development for a restaurant webs
 
 ## AI Usage
 - Used [AI tool] to generate [specific component, e.g., UI layout, API endpoints].
+
+## Database
+The database used is postrgresql.  The Database directory includes the breakdown of the various tables.
